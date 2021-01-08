@@ -8,7 +8,8 @@ const data = {
 const contents = {
   title: "Harry Porter",
   subtitle: "Magic in the world",
-  options: ["one", "two"]
+  options: ["one", "two"],
+  shown: false
 }; //userTemplate
 
 const UserTemplate = () => {
@@ -29,12 +30,93 @@ const getAge = () => {
 
 
 const ContentTemplate = () => {
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", null, contents.title), /*#__PURE__*/React.createElement("p", null, contents.subtitle), contents.options.length > 0 ? /*#__PURE__*/React.createElement("p", null, "Here are options") : /*#__PURE__*/React.createElement("p", null, "none"), /*#__PURE__*/React.createElement("ol", null, /*#__PURE__*/React.createElement("li", null, "item1"), /*#__PURE__*/React.createElement("li", null, "item2")));
+  const formSubmit = e => {
+    e.preventDefault();
+    const option = e.target.elements.option.value;
+
+    if (option) {
+      contents.options.push(option);
+      e.target.elements.option.value = "";
+      render();
+    }
+  };
+
+  const removeOption = () => {
+    contents.options = [];
+    render();
+  };
+
+  const getRandomNum = () => {
+    const number = Math.floor(Math.random() * contents.options.length);
+    const option = contents.options[number];
+    console.log(option);
+  };
+
+  const toggleFunc = () => {
+    contents.shown = !contents.shown;
+    render();
+  };
+
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h3", null, contents.title), /*#__PURE__*/React.createElement("p", null, contents.subtitle), contents.options.length > 0 ? /*#__PURE__*/React.createElement("p", null, "Here are options") : /*#__PURE__*/React.createElement("p", null, "none"), /*#__PURE__*/React.createElement("ol", null, contents.options.map(el => {
+    return /*#__PURE__*/React.createElement("li", {
+      key: el
+    }, el);
+  })), /*#__PURE__*/React.createElement("form", {
+    onSubmit: formSubmit
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    name: "option"
+  }), /*#__PURE__*/React.createElement("button", null, "add option"), /*#__PURE__*/React.createElement("button", {
+    disabled: contents.options.length === 0,
+    onClick: getRandomNum
+  }, "random"), /*#__PURE__*/React.createElement("button", {
+    onClick: removeOption
+  }, "remove")), /*#__PURE__*/React.createElement("button", {
+    onClick: toggleFunc
+  }, "toggle"), contents.shown ? "" : /*#__PURE__*/React.createElement("p", null, "this is toggle feature"));
+};
+
+let store = {
+  count: 0,
+  upId: "add",
+  downId: "substract",
+  resetId: "reset"
+}; //counter functions
+
+const addOne = () => {
+  store.count++;
+  renderCounter();
+};
+
+const minusOne = () => {
+  store.count--;
+  renderCounter();
+};
+
+const resetHandler = () => {
+  store.count = 0;
+  renderCounter();
+}; //count template
+
+
+const CountTemplate = () => {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h1", null, "Count:", store.count), /*#__PURE__*/React.createElement("button", {
+    id: store.upId,
+    onClick: addOne
+  }, "+"), /*#__PURE__*/React.createElement("button", {
+    id: store.downId,
+    onClick: minusOne
+  }, "-"), /*#__PURE__*/React.createElement("button", {
+    id: store.resetId,
+    onClick: resetHandler
+  }, "reset"));
 }; //JSX template
 
 
-const template = /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(ContentTemplate, null), /*#__PURE__*/React.createElement(UserTemplate, null)); //es2015
-// const template = React.createElement("p", null, "this is react app");
+const render = () => {
+  const template = /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(ContentTemplate, null), /*#__PURE__*/React.createElement(UserTemplate, null), /*#__PURE__*/React.createElement(CountTemplate, null));
+  ReactDOM.render(template, appRoot);
+};
 
 const appRoot = document.getElementById("app");
-ReactDOM.render(template, appRoot);
+render();
