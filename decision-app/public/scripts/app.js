@@ -85,17 +85,17 @@ let store = {
 
 const addOne = () => {
   store.count++;
-  renderCounter();
+  render();
 };
 
 const minusOne = () => {
   store.count--;
-  renderCounter();
+  render();
 };
 
 const resetHandler = () => {
   store.count = 0;
-  renderCounter();
+  render();
 }; //count template
 
 
