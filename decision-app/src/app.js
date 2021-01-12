@@ -1,139 +1,62 @@
-const data = {
-  name: "David",
-  age: 30,
-  location: "SF",
-};
-
-const contents = {
-  title: "Harry Porter",
-  subtitle: "Magic in the world",
-  options: ["one", "two"],
-  shown: false,
-};
-
-//userTemplate
-const UserTemplate = () => {
-  return (
-    <div>
-      <h1>{data.name ? data.name : "Anonymous"}</h1>
-      {getAge()}
-      {getLocation(data.location)}
-    </div>
-  );
-};
-const getLocation = (el) => {
-  if (el === "NY") {
-    return <p>Location:Awesome {el}</p>;
-  } else {
-    return <p>fairly good location in the {el}</p>;
+class DecisionApp extends React.Component {
+  render() {
+    const title = "hello reactjs";
+    const subTitle = "this is code for reactjs";
+    const options = ["one", "two", "three"];
+    return (
+      <div>
+        <Header title={title} subTitle={subTitle} />
+        <Action />
+        <Options options={options} />
+        <AddOption />
+      </div>
+    );
   }
-};
+}
 
-const getAge = () => {
-  return data.age > 20 ? <p>age: {data.age}</p> : <p>under Age</p>;
-};
+class Header extends React.Component {
+  render() {
+    return (
+      <div>
+        <h1>{this.props.title}</h1>
+        <p>{this.props.subTitle}</p>
+      </div>
+    );
+  }
+}
 
-//content template
-const ContentTemplate = () => {
-  const formSubmit = (e) => {
-    e.preventDefault();
-    const option = e.target.elements.option.value;
-    if (option) {
-      contents.options.push(option);
-      e.target.elements.option.value = "";
-      render();
-    }
-  };
-  const removeOption = () => {
-    contents.options = [];
-    render();
-  };
+//action component
+class Action extends React.Component {
+  render() {
+    return <div>What should i do?</div>;
+  }
+}
 
-  const getRandomNum = () => {
-    const number = Math.floor(Math.random() * contents.options.length);
-    const option = contents.options[number];
-    console.log(option);
-  };
+//options
+class Options extends React.Component {
+  render() {
+    return (
+      <div>
+        {this.props.options.map((option) => (
+          <Option key={option} option={option} />
+        ))}
+      </div>
+    );
+  }
+}
 
-  const toggleFunc = () => {
-    contents.shown = !contents.shown;
-    render();
-  };
-  return (
-    <div>
-      <h3>{contents.title}</h3>
-      <p>{contents.subtitle}</p>
-      {contents.options.length > 0 ? <p>Here are options</p> : <p>none</p>}
+//option component
+class Option extends React.Component {
+  render() {
+    return <div key={this.props.key}>{this.props.option}</div>;
+  }
+}
 
-      <ol>
-        {contents.options.map((el) => {
-          return <li key={el}>{el}</li>;
-        })}
-      </ol>
+//option component
+class AddOption extends React.Component {
+  render() {
+    return <div>add option</div>;
+  }
+}
 
-      <form onSubmit={formSubmit}>
-        <input type="text" name="option" />
-        <button>add option</button>
-        <button disabled={contents.options.length === 0} onClick={getRandomNum}>
-          random
-        </button>
-        <button onClick={removeOption}>remove</button>
-      </form>
-      <button onClick={toggleFunc}>toggle</button>
-      {contents.shown ? "" : <p>this is toggle feature</p>}
-    </div>
-  );
-};
-
-let store = {
-  count: 0,
-  upId: "add",
-  downId: "substract",
-  resetId: "reset",
-};
-
-//counter functions
-const addOne = () => {
-  store.count++;
-  render();
-};
-const minusOne = () => {
-  store.count--;
-  render();
-};
-const resetHandler = () => {
-  store.count = 0;
-  render();
-};
-
-//count template
-const CountTemplate = () => {
-  return (
-    <div>
-      <h1>Count:{store.count}</h1>
-      <button id={store.upId} onClick={addOne}>
-        +
-      </button>
-      <button id={store.downId} onClick={minusOne}>
-        -
-      </button>
-      <button id={store.resetId} onClick={resetHandler}>
-        reset
-      </button>
-    </div>
-  );
-};
-//JSX template
-const render = () => {
-  const template = (
-    <div>
-      <ContentTemplate />
-      <UserTemplate />
-      <CountTemplate />
-    </div>
-  );
-  ReactDOM.render(template, appRoot);
-};
-
-const appRoot = document.getElementById("app");
-render();
+ReactDOM.render(<DecisionApp />, document.getElementById("app"));

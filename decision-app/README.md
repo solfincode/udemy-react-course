@@ -8,3 +8,4 @@
 6. data binding
 7. form and input
 8. array in JSX
+9. component and props
