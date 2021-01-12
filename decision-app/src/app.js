@@ -1,3 +1,10 @@
+const obj = {
+  name: "david",
+  getName() {
+    return this.name;
+  },
+};
+
 class DecisionApp extends React.Component {
   render() {
     const title = "hello reactjs";
@@ -27,16 +34,31 @@ class Header extends React.Component {
 
 //action component
 class Action extends React.Component {
+  handleClick() {
+    alert("clicked");
+  }
   render() {
-    return <div>What should i do?</div>;
+    return (
+      <div>
+        <button onClick={this.handleClick}>what should i do?</button>
+      </div>
+    );
   }
 }
 
 //options
 class Options extends React.Component {
+  constructor(props) {
+    super(props);
+    this.removeAll = this.removeAll.bind(this);
+  }
+  removeAll() {
+    alert("removed!!!");
+  }
   render() {
     return (
       <div>
+        <button onClick={this.removeAll}>removeAll</button>
         {this.props.options.map((option) => (
           <Option key={option} option={option} />
         ))}
@@ -54,8 +76,24 @@ class Option extends React.Component {
 
 //option component
 class AddOption extends React.Component {
+  addOption(e) {
+    e.preventDefault();
+    const option = e.target.elements.optionInput.value;
+    if (option) {
+      alert(option);
+    } else {
+      alert("type options");
+    }
+  }
   render() {
-    return <div>add option</div>;
+    return (
+      <div>
+        <form onSubmit={this.addOption}>
+          <input type="text" name="optionInput" />
+          <button>submit</button>
+        </form>
+      </div>
+    );
   }
 }
 
