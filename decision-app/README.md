@@ -9,3 +9,6 @@
 7. form and input
 8. array in JSX
 9. component and props
+10. event and method binding
+11. component state
+12. props and state - add option and delete option
