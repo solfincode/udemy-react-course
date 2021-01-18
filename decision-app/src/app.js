@@ -7,12 +7,35 @@ class DecisionApp extends React.Component {
       options: [],
     };
   }
-  handleDelete = () => {
+  componentDidMount() {
+    try {
+      const json = localStorage.getItem("options");
+      const options = JSON.parse(json);
+      if (options) {
+        this.setState(() => ({ options }));
+      }
+    } catch (e) {
+      console.log("error");
+    }
+  }
+  componentDidUpdate(preProps, prevState) {
+    if (prevState.options.length !== this.state.options.length) {
+      const json = JSON.stringify(this.state.options);
+      localStorage.setItem("options", json);
+      console.log("saving data");
+    }
+  }
+  handleDeleteAll = () => {
     this.setState(() => {
       return {
         options: [],
       };
     });
+  };
+  handleDelete = (optionToRemove) => {
+    this.setState((prevState) => ({
+      options: prevState.options.filter((option) => optionToRemove !== option),
+    }));
   };
   handleAddOption = (option) => {
     if (!option) {
@@ -20,20 +43,19 @@ class DecisionApp extends React.Component {
     } else if (this.state.options.indexOf(option) > -1) {
       return "this option is already exists";
     }
-    this.setState((prevState) => {
-      return {
-        options: prevState.options.concat([option]),
-      };
-    });
+    this.setState((prevState) => ({
+      options: prevState.options.concat([option]),
+    }));
   };
   handlePick = () => {
     const randomNum = Math.floor(Math.random() * this.state.options.length);
     alert(this.state.options[randomNum]);
   };
+
   render() {
     return (
       <div>
-        <Header title={this.state.title} subTitle={this.state.subTitle} />
+        <Header subTitle={this.state.subTitle} />
         <Action
           handlePick={this.handlePick}
           hasOptions={this.state.options.length > 0}
@@ -41,62 +63,70 @@ class DecisionApp extends React.Component {
         <Options
           options={this.state.options}
           handleDelete={this.handleDelete}
+          handleDeleteAll={this.handleDeleteAll}
         />
         <AddOption handleAddOption={this.handleAddOption} />
         <CounterApp />
         <VisibilityApp />
+        <User name="David" age={30} />
       </div>
     );
   }
 }
 
-class Header extends React.Component {
-  render() {
-    return (
-      <div>
-        <h1>{this.props.title}</h1>
-        <p>{this.props.subTitle}</p>
-      </div>
-    );
-  }
-}
+const Header = (props) => {
+  return (
+    <div>
+      <h1>{props.title}</h1>
+      <p>{props.subTitle}</p>
+    </div>
+  );
+};
+
+Header.defaultProps = {
+  title: "default props title",
+};
 
 //action component
-class Action extends React.Component {
-  render() {
-    return (
-      <div>
-        <button
-          onClick={this.props.handlePick}
-          disabled={!this.props.hasOptions}
-        >
-          what should i do?
-        </button>
-      </div>
-    );
-  }
-}
+const Action = (props) => {
+  return (
+    <div>
+      <button onClick={props.handlePick} disabled={props.hasOptions}>
+        what should i do?
+      </button>
+    </div>
+  );
+};
 
 //options
-class Options extends React.Component {
-  render() {
-    return (
-      <div>
-        <button onClick={this.props.handleDelete}>removeAll</button>
-        {this.props.options.map((option) => (
-          <Option key={option} option={option} />
-        ))}
-      </div>
-    );
-  }
-}
+const Options = (props) => {
+  return (
+    <div>
+      <button onClick={props.handleDeleteAll}>removeAll</button>
+      {props.options.length === 0 && <p>please add an option</p>}
+      {props.options.map((option) => (
+        <Option
+          key={option}
+          option={option}
+          optionText={option}
+          handleDelete={props.handleDelete}
+        />
+      ))}
+    </div>
+  );
+};
 
 //option component
-class Option extends React.Component {
-  render() {
-    return <div>{this.props.option}</div>;
-  }
-}
+const Option = (props) => {
+  return (
+    <div>
+      <div>{props.option}</div>
+      <button onClick={(e) => props.handleDelete(props.optionText)}>
+        delete
+      </button>
+    </div>
+  );
+};
 
 //option component
 class AddOption extends React.Component {
@@ -113,6 +143,9 @@ class AddOption extends React.Component {
     this.setState(() => {
       return { error };
     });
+    if (!error) {
+      e.target.elements.optionInput.value = "";
+    }
   };
   render() {
     return (
@@ -135,7 +168,18 @@ class CounterApp extends React.Component {
       count: 0,
     };
   }
-
+  componentDidMount() {
+    const stringCount = localStorage.getItem("count");
+    const count = parseInt(stringCount, 10);
+    if (!isNaN(count)) {
+      this.setState(() => ({ count }));
+    }
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.count !== this.state.count) {
+      localStorage.setItem("count", this.state.count);
+    }
+  }
   //counter functions
   addOne = () => {
     this.setState({
@@ -192,4 +236,13 @@ class VisibilityApp extends React.Component {
     );
   }
 }
+
+const User = (props) => {
+  return (
+    <div>
+      <p>Name: {props.name}</p>
+      <p>Age: {props.age}</p>
+    </div>
+  );
+};
 ReactDOM.render(<DecisionApp />, document.getElementById("app"));

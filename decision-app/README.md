@@ -12,3 +12,6 @@
 10. event and method binding
 11. component state
 12. props and state - add option and delete option
+13. stateless component using arrow function
+14. lifecycle in class based component
+15. localStorage

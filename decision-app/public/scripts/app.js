@@ -6,12 +6,18 @@ class DecisionApp extends React.Component {
   constructor(props) {
     super(props);
 
-    _defineProperty(this, "handleDelete", () => {
+    _defineProperty(this, "handleDeleteAll", () => {
       this.setState(() => {
         return {
           options: []
         };
       });
+    });
+
+    _defineProperty(this, "handleDelete", optionToRemove => {
+      this.setState(prevState => ({
+        options: prevState.options.filter(option => optionToRemove !== option)
+      }));
     });
 
     _defineProperty(this, "handleAddOption", option => {
@@ -21,11 +27,9 @@ class DecisionApp extends React.Component {
         return "this option is already exists";
       }
 
-      this.setState(prevState => {
-        return {
-          options: prevState.options.concat([option])
-        };
-      });
+      this.setState(prevState => ({
+        options: prevState.options.concat([option])
+      }));
     });
 
     _defineProperty(this, "handlePick", () => {
@@ -40,61 +44,82 @@ class DecisionApp extends React.Component {
     };
   }
 
+  componentDidMount() {
+    try {
+      const json = localStorage.getItem("options");
+      const options = JSON.parse(json);
+
+      if (options) {
+        this.setState(() => ({
+          options
+        }));
+      }
+    } catch (e) {
+      console.log("error");
+    }
+  }
+
+  componentDidUpdate(preProps, prevState) {
+    if (prevState.options.length !== this.state.options.length) {
+      const json = JSON.stringify(this.state.options);
+      localStorage.setItem("options", json);
+      console.log("saving data");
+    }
+  }
+
   render() {
     return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Header, {
-      title: this.state.title,
       subTitle: this.state.subTitle
     }), /*#__PURE__*/React.createElement(Action, {
       handlePick: this.handlePick,
       hasOptions: this.state.options.length > 0
     }), /*#__PURE__*/React.createElement(Options, {
       options: this.state.options,
-      handleDelete: this.handleDelete
+      handleDelete: this.handleDelete,
+      handleDeleteAll: this.handleDeleteAll
     }), /*#__PURE__*/React.createElement(AddOption, {
       handleAddOption: this.handleAddOption
-    }), /*#__PURE__*/React.createElement(CounterApp, null), /*#__PURE__*/React.createElement(VisibilityApp, null));
+    }), /*#__PURE__*/React.createElement(CounterApp, null), /*#__PURE__*/React.createElement(VisibilityApp, null), /*#__PURE__*/React.createElement(User, {
+      name: "David",
+      age: 30
+    }));
   }
 
 }
 
-class Header extends React.Component {
-  render() {
-    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h1", null, this.props.title), /*#__PURE__*/React.createElement("p", null, this.props.subTitle));
-  }
+const Header = props => {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h1", null, props.title), /*#__PURE__*/React.createElement("p", null, props.subTitle));
+};
 
-} //action component
+Header.defaultProps = {
+  title: "default props title"
+}; //action component
 
-
-class Action extends React.Component {
-  render() {
-    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
-      onClick: this.props.handlePick,
-      disabled: !this.props.hasOptions
-    }, "what should i do?"));
-  }
-
-} //options
+const Action = props => {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+    onClick: props.handlePick,
+    disabled: props.hasOptions
+  }, "what should i do?"));
+}; //options
 
 
-class Options extends React.Component {
-  render() {
-    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
-      onClick: this.props.handleDelete
-    }, "removeAll"), this.props.options.map(option => /*#__PURE__*/React.createElement(Option, {
-      key: option,
-      option: option
-    })));
-  }
+const Options = props => {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("button", {
+    onClick: props.handleDeleteAll
+  }, "removeAll"), props.options.length === 0 && /*#__PURE__*/React.createElement("p", null, "please add an option"), props.options.map(option => /*#__PURE__*/React.createElement(Option, {
+    key: option,
+    option: option,
+    optionText: option,
+    handleDelete: props.handleDelete
+  })));
+}; //option component
 
-} //option component
 
-
-class Option extends React.Component {
-  render() {
-    return /*#__PURE__*/React.createElement("div", null, this.props.option);
-  }
-
-} //option component
+const Option = props => {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", null, props.option), /*#__PURE__*/React.createElement("button", {
+    onClick: e => props.handleDelete(props.optionText)
+  }, "delete"));
+}; //option component
 
 
 class AddOption extends React.Component {
@@ -110,6 +135,10 @@ class AddOption extends React.Component {
           error
         };
       });
+
+      if (!error) {
+        e.target.elements.optionInput.value = "";
+      }
     });
 
     this.state = {
@@ -154,6 +183,23 @@ class CounterApp extends React.Component {
     this.state = {
       count: 0
     };
+  }
+
+  componentDidMount() {
+    const stringCount = localStorage.getItem("count");
+    const count = parseInt(stringCount, 10);
+
+    if (!isNaN(count)) {
+      this.setState(() => ({
+        count
+      }));
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.count !== this.state.count) {
+      localStorage.setItem("count", this.state.count);
+    }
   } //counter functions
 
 
@@ -194,5 +240,9 @@ class VisibilityApp extends React.Component {
   }
 
 }
+
+const User = props => {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", null, "Name: ", props.name), /*#__PURE__*/React.createElement("p", null, "Age: ", props.age));
+};
 
 ReactDOM.render( /*#__PURE__*/React.createElement(DecisionApp, null), document.getElementById("app"));
