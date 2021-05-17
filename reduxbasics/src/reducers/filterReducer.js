@@ -1,9 +1,12 @@
+//default state
 const filterReducerDefaultState = {
   text: "",
   sortBy: "date",
   startDate: undefined,
   endDate: undefined,
 };
+
+//filter reducer
 export default function FilterReducer(
   state = filterReducerDefaultState,
   action
@@ -20,6 +23,16 @@ export default function FilterReducer(
       return {
         ...state,
         sortBy: "date",
+      };
+    case "SET_START_DATE":
+      return {
+        ...state,
+        startDate: action.startDate,
+      };
+    case "SET_END_DATE":
+      return {
+        ...state,
+        endDate: action.endDate,
       };
     default:
       return state;

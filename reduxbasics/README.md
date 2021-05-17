@@ -11,3 +11,5 @@
    action creator - return type name of action todo
    reducer - take state and action and return new state and define what to do based on action category
    dispatch - make real action with action creator function
+
+4. results will be on console tab of browser

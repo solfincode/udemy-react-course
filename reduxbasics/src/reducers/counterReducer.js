@@ -1,4 +1,4 @@
-import { INCREMENT, DECREMENT, RESET } from "../actions/counterAction";
+import { INCREMENT, DECREMENT, RESET, SET } from "../actions/counterAction";
 
 export default function counterReducer(state = { count: 0 }, action) {
   switch (action.type) {
@@ -13,6 +13,10 @@ export default function counterReducer(state = { count: 0 }, action) {
     case RESET:
       return {
         count: 0,
+      };
+    case SET:
+      return {
+        count: action.count,
       };
     default:
       return state;
